@@ -1,22 +1,24 @@
 import { Injectable } from '@angular/core';
-//import { Http } from '@angular/httpClient';
 
 @Injectable()
 export class LevelService {
-  constructor(
-    //private http: Http
-  ) {}
-
+  constructor() { }
 
   async getName() {
       const response = await fetch('../../assets/data.json');
-      const result = response.text();
+      const result = await response.text();
       return result;
   }
 
   async getReaders() {
     const readers = await fetch('../../assets/readers.json');
-    const res = readers.text();
+    const res = await readers.text();
+    return res;
+  }
+
+  async getTypes() {
+    const types = await fetch('../../assets/types.json');
+    const res = await types.text();
     return res;
   }
 }

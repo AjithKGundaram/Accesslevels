@@ -9,11 +9,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { LevelService } from '../services/levels.service';
 import { AccesslevelComponent } from './accesslevel/accesslevel.component';
 import { MatTableModule } from '@angular/material';
+import { FilterPipe } from './filter.pipe';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    AccesslevelComponent
+    AccesslevelComponent,
+    FilterPipe
   ],
   imports: [
     BrowserModule,
@@ -22,7 +26,9 @@ import { MatTableModule } from '@angular/material';
     MatCardModule,
     HttpClientModule,
     MatTableModule,
-    MatInputModule
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   exports: [
     MatInputModule

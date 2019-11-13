@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LevelService } from 'src/services/levels.service';
-import { MatTableDataSource } from '@angular/material/table';
-
-let output = { };
-let data = [];
+import { MatTableDataSource } from '@angular/material';
+import {MatButtonModule} from '@angular/material';
 
 @Component({
   selector: 'app-accesslevel',
@@ -12,49 +10,119 @@ let data = [];
 })
 
 export class AccesslevelComponent implements OnInit {
-  displayedColumns: string[] = [ 'name', 'reader'];
-  dataSource = new MatTableDataSource(data);
+  accessLevels :object[] = [];
+  readers: [];
+  types: [];
+  levelNames: []
+  readerName: string;
+  description: string;
+  typeName: string;
+  name: string;
 
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+  displayedColumns: string[] = [ 'levelName', 'readerName', 'readerType'];
+  accessLevel = new MatTableDataSource(...[this.accessLevels]);
+
+  onRowClicked(row) {
+    console.log(row);
+    this.name = row['name'];
+    this.description = row['Description'];
+    this.readerName = row['readerName'];
+    this.typeName = row['typeName'];
   }
 
-  accessLevels:[];
-  readers: [];
+  save() {
+    this.accessLevels.push({
+      id: Math.random(),
+      name: this.name,
+      Description: this.description,
+      readerName: this.readerName,
+      typeName: this.typeName
+    })
+    this.name = "";
+    this.description = "";
+    this.readerName = "";
+    this.typeName = "";
+    this.accessLevel = new MatTableDataSource(this.accessLevels);
+    return this.accessLevels;
+  }
+
+  cancel() {
+    this.name = "";
+    this.description = "";
+    this.readerName = "";
+    this.typeName = "";
+  }
 
   constructor(
     private service : LevelService
   ) { }
 
   ngOnInit() {
+
     this.service.getReaders().then((response) => {
       this.readers = JSON.parse(response);
-       return this.readers;
+      
+       //return this.readers;
     })
 
-    this.service.getName().then((res) => {
+     this.service.getTypes().then((type) => {
+      this.types = JSON.parse(type); 
       
+
+        // this.types.forEach((type) => {
+        //   if(type['id'] === '1'){
+        //     type['typeName'] = this.types[0];
+        //   } else {
+        //     if(type['id'] === '2'){
+        //       type['typeName'] = this.types[1];
+        //   } 
+        // })
+        // this.readers.forEach((reader) => {
+        //   this.types.forEach((type) => {
+        //     if(reader['typeId'] === type['typeId']) {
+        //       type['typeName'] = type['name'];
+              
+        //     }
+        //   })
+        // })
+        return this.types;
+    })
+
+
+   
+    this.service.getName().then((res) => {
       this.accessLevels = JSON.parse(res);
-      this.accessLevels.map((level) => {
-        debugger;
-        this.readers.forEach((item) => {
-          if(level['readerId'] === item['id'] && output[level['name']] === undefined){
-            output['Levelname'] = level['name']
-            output['readerName'] = item['name'];
-          }
+      this.accessLevels.forEach((level) => {
+        this.readers.forEach((reader) => {
+            if(level['readerId'] === reader['id'] && level['readerName'] === undefined){
+              level['readerName'] = reader['name'];
+            }
+          })
+        })
+
+      this.accessLevels.forEach((level) => {
+        this.readers.forEach((reader) => {
+          this.types.forEach((type) => {
+            if(type['id'] === reader['typeId']){
+              level['typeName'] = type['name'];
+            }
+          })
         })
       })
-      output;
-      console.log(output);
-      // let arr = Object.values(output);
-      //       console.log(arr);
-    //   let ret;
-    //   let result = Object.keys(output).map((key) => {
-    //      ret = [output[key]]
-    //     console.log(output);
-    //   })
-    //   console.log(result)
-    });
-    
+
+      // this.accessLevels.forEach((level) => {
+      //   this.readers.forEach((reader) => {
+      //     this.types.forEach((type) => {
+      //       this.levelNames.forEach((levelName) => {
+      //         if(levelName['id'] === type['typeId']){
+      //           level['typeName'] = levelName['name'];
+      //         }
+      //       })
+      //     });
+      //   });
+      // })
+      console.log('----this.accessLevels----------', this.accessLevels);
+      this.accessLevel = new MatTableDataSource(...[this.accessLevels]);
+    })
   }
 }
